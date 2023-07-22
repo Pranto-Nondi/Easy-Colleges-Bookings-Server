@@ -53,7 +53,7 @@ async function run() {
                     name: { $regex: name, $options: 'i' },
                 }).toArray();
 
-                res.send(colleges);
+                res.send(colleges); 
             } catch (error) {
                 console.error(error);
                 res.status(500).json({ message: 'Server error' });
