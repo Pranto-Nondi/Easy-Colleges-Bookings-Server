@@ -43,6 +43,22 @@ async function run() {
             const result = await collegesCollection.find().toArray();
             res.send(result);
         });
+        // API endpoint for searching colleges by name
+        app.get('/searchColleges', async (req, res) => {
+            const { name } = req.query;
+
+            try {
+        
+                const colleges = await collegesCollection.find({
+                    name: { $regex: name, $options: 'i' },
+                }).toArray();
+
+                res.send(colleges);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Server error' });
+            }
+        });
 
 
 
