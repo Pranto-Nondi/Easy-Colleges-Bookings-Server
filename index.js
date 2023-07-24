@@ -36,6 +36,7 @@ async function run() {
             }
         });
         const collegesCollection = client.db("EasyCollegeBookings").collection("colleges");
+        const admissionDataCollection = client.db("EasyCollegeBookings").collection("admissionData");
 
 
         // colleges related api
@@ -48,26 +49,53 @@ async function run() {
             const { name } = req.query;
 
             try {
-        
+
                 const colleges = await collegesCollection.find({
                     name: { $regex: name, $options: 'i' },
                 }).toArray();
 
-                res.send(colleges); 
+                res.send(colleges);
             } catch (error) {
                 console.error(error);
                 res.status(500).json({ message: 'Server error' });
             }
         });
 
-         // id by search college
+        // id by search college
         //  app.get('/colleges/:id', async (req, res) => {
         //     const id = req.params.id
         //     const query = { _id: new ObjectId(id) };
-           
+
         //     const result = await collegesCollection.findOne(query);
         //     res.send(result);
         // })
+
+        // admission form
+        app.post('/admission', async (req, res) => {
+            const admissionForm = req.body;
+
+
+            try {
+                const result = await admissionDataCollection.insertOne(admissionForm);
+                res.status(200).json({ insertedId: result.insertedId });
+            } catch (error) {
+                console.error('Error inserting form data:', error);
+                res.status(500).json({ error: 'Failed to insert form data' });
+            }
+        });
+        app.get('/admission/search', async (req, res) => {
+            try {
+                console.log('Received request for admission search');
+                const result = await admissionDataCollection.find().toArray();
+                // console.log('Found data:', result);
+                res.json(result);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                res.status(500).json({ message: 'Server error' });
+            }
+        });
+
+
 
 
 
