@@ -37,6 +37,7 @@ async function run() {
         });
         const collegesCollection = client.db("EasyCollegeBookings").collection("colleges");
         const admissionDataCollection = client.db("EasyCollegeBookings").collection("admissionData");
+        const reviewDataCollection = client.db("EasyCollegeBookings").collection("reviewData");
 
 
         // colleges related api
@@ -95,23 +96,25 @@ async function run() {
             }
         });
 
+        // API endpoint for submitting a review
+        app.post('/admission/review', async (req, res) => {
+            const { rating, reviewText } = req.body;
 
+            try {
+                const reviewData = {
+                    rating,
+                    reviewText,
+                    createdAt: new Date(),
+                };
 
+                await reviewDataCollection.insertOne(reviewData);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                res.status(200).json({ message: 'Review submitted successfully' });
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                res.status(500).json({ message: 'Error submitting review' });
+            }
+        });
 
 
         // Send a ping to confirm a successful connection
