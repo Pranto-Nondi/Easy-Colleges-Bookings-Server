@@ -20,21 +20,13 @@ const client = new MongoClient(uri, {
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
-    },
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    maxPoolSize: 10,
+    }
 });
 
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        client.connect((err) => {
-            if (err) {
-                console.log(err)
-                return err
-            }
-        });
+        client.connect();
         const collegesCollection = client.db("EasyCollegeBookings").collection("colleges");
         const admissionDataCollection = client.db("EasyCollegeBookings").collection("admissionData");
         const reviewDataCollection = client.db("EasyCollegeBookings").collection("reviewData");
@@ -45,7 +37,7 @@ async function run() {
             const result = await collegesCollection.find().toArray();
             res.send(result);
         });
-        // API endpoint for searching colleges by name
+
         app.get('/searchColleges', async (req, res) => {
             const { name } = req.query;
 
@@ -97,24 +89,37 @@ async function run() {
         });
 
         // API endpoint for submitting a review
-        app.post('/admission/review', async (req, res) => {
-            const { rating, reviewText } = req.body;
+       
+       
+        app.post('/reviews', async (req, res) => {
+            const { collegeId, review, rating } = req.body;
 
             try {
-                const reviewData = {
+                const newReview = {
+                    collegeId,
+                    review,
                     rating,
-                    reviewText,
-                    createdAt: new Date(),
                 };
 
-                await reviewDataCollection.insertOne(reviewData);
-
-                res.status(200).json({ message: 'Review submitted successfully' });
+            
+                await reviewDataCollection.insertOne(newReview);
+                res.status(201).json({ message: 'Review added successfully!' });
             } catch (error) {
-                console.error('Error submitting review:', error);
-                res.status(500).json({ message: 'Error submitting review' });
+                console.error('Error saving review:', error);
+                res.status(500).json({ error: 'An error occurred while saving the review.' });
             }
         });
+
+
+
+
+
+
+
+
+
+
+
 
 
         // Send a ping to confirm a successful connection
