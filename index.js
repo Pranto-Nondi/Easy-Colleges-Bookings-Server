@@ -54,14 +54,7 @@ async function run() {
             }
         });
 
-        // id by search college
-        //  app.get('/colleges/:id', async (req, res) => {
-        //     const id = req.params.id
-        //     const query = { _id: new ObjectId(id) };
-
-        //     const result = await collegesCollection.findOne(query);
-        //     res.send(result);
-        // })
+        
 
         // admission form
         app.post('/admission', async (req, res) => {
@@ -78,7 +71,7 @@ async function run() {
         });
         app.get('/admission/search', async (req, res) => {
             try {
-                console.log('Received request for admission search');
+              
                 const result = await admissionDataCollection.find().toArray();
                 // console.log('Found data:', result);
                 res.json(result);
@@ -89,19 +82,20 @@ async function run() {
         });
 
         // API endpoint for submitting a review
-       
-       
+
+
         app.post('/reviews', async (req, res) => {
-            const { collegeId, review, rating } = req.body;
+            const { collegeId, collegeName, review, rating } = req.body;
 
             try {
                 const newReview = {
                     collegeId,
+                    collegeName,
                     review,
                     rating,
                 };
 
-            
+
                 await reviewDataCollection.insertOne(newReview);
                 res.status(201).json({ message: 'Review added successfully!' });
             } catch (error) {
@@ -109,12 +103,17 @@ async function run() {
                 res.status(500).json({ error: 'An error occurred while saving the review.' });
             }
         });
-
-
-
-
-
-
+        app.get('/reviews', async (req, res) => {
+            try {
+               
+                const result = await reviewDataCollection.find().toArray();
+                // console.log('Found data:', result);
+                res.json(result);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                res.status(500).json({ message: 'Server error' });
+            }
+        });
 
 
 
